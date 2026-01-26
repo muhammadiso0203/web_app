@@ -3,11 +3,11 @@ import {tests} from "../../data/test"
 
 const Tests = () => {
   const [current, setCurrent] = useState(0);
-  const [answers, setAnswers] = useState([]);
+  const [answers, setAnswers] = useState<number[]>([]);
   const [finished, setFinished] = useState(false);
 
 
-  const selectAnswer = (index: number) => {
+  const selectAnswer = (index:number) => {
     const newAnswers = [...answers];
     newAnswers[current] = index;
     setAnswers(newAnswers);
