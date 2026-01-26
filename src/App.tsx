@@ -1,9 +1,9 @@
-import User from "./page/user/user"
+import Tests from "./page/test/test"
 
 const App = () => {
   return (
     <div>
-      <User/>
+      <Tests/>
     </div>
   )
 }
