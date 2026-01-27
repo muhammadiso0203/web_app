@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import { ArrowLeft, LineChart } from "lucide-react";
 import { tests } from "../../data/test";
+import { useNavigate } from "react-router";
+import { useSubmitTest } from "../service/checkResult";
 
-const TIME_PER_TEST = 30; 
+const TIME_PER_TEST = 30;
 
 const Tests = () => {
   const [current, setCurrent] = useState(0);
@@ -9,7 +12,12 @@ const Tests = () => {
   const [finished, setFinished] = useState(false);
   const [timeLeft, setTimeLeft] = useState(TIME_PER_TEST);
 
-  // ⏱ Timer ishlashi
+  const navigate = useNavigate();
+  const { mutate: submitTest, isPending } = useSubmitTest();
+
+  const test = tests.level1.tests1;
+
+  /* ================= TIMER ================= */
   useEffect(() => {
     if (finished) return;
 
@@ -26,20 +34,20 @@ const Tests = () => {
     return () => clearInterval(interval);
   }, [current, finished]);
 
-  // ⏰ Vaqt tugaganda
+  /* ================= TIME OUT ================= */
   const handleTimeOut = () => {
     const newAnswers = [...answers];
-    newAnswers[current] = -1; // javob tanlanmadi
+    newAnswers[current] = -1;
     setAnswers(newAnswers);
 
-    if (current + 1 < tests.length) {
+    if (current + 1 < test.length) {
       setCurrent(current + 1);
     } else {
       setFinished(true);
     }
   };
 
-  // ✅ Javob tanlanganda
+  /* ================= ANSWER ================= */
   const selectAnswer = (index: number) => {
     const newAnswers = [...answers];
     newAnswers[current] = index;
@@ -47,133 +55,121 @@ const Tests = () => {
 
     setTimeLeft(TIME_PER_TEST);
 
-    if (current + 1 < tests.length) {
+    if (current + 1 < test.length) {
       setCurrent(current + 1);
     } else {
       setFinished(true);
     }
   };
 
-  /* =====================
-     NATIJA SAHIFASI
-  ====================== */
+  /* ================= BACKENDGA YUBORISH ================= */
+  useEffect(() => {
+    if (!finished) return;
+
+    // Telegram WebApp user (agar bo‘lsa)
+    const tgUser = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user;
+
+    submitTest({
+      tests: test,
+      answers,
+      user: {
+        username: tgUser?.username,
+        firstName: tgUser?.first_name,
+      },
+    });
+  }, [finished]);
+
+  /* ================= RESULT ================= */
   if (finished) {
     const correctCount = answers.filter(
-      (ans, i) => ans === tests[i].correct
+      (ans, i) => ans === test[i].correct,
     ).length;
 
     const skipped = answers.filter((a) => a === -1).length;
 
     return (
-      <div style={styles.resultWrapper}>
-        <h2 style={styles.title}>📊 Test natijasi</h2>
+      <div className="min-h-screen flex items-center justify-center bg-black p-6">
+        <div className="w-full max-w-md p-8 text-center flex flex-col items-center bg-black">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-white">
+            <LineChart className="w-7 h-7 text-blue-600" />
+            Test natijasi
+          </h2>
 
-        <p>Jami testlar: <b>{tests.length}</b></p>
-        <p>To‘g‘ri: <b style={{ color: "#22c55e" }}>{correctCount}</b></p>
-        <p>Xato: <b style={{ color: "#ef4444" }}>
-          {tests.length - correctCount - skipped}
-        </b></p>
-        <p>Belgilanmadi: <b>{skipped}</b></p>
+          <div className="w-full space-y-2 text-lg">
+            <p className="text-white">
+              Jami testlar: <b>{test.length}</b>
+            </p>
+            <p className="text-green-600 font-semibold">
+              To‘g‘ri: {correctCount}
+            </p>
+            <p className="text-red-600 font-semibold">
+              Xato: {test.length - correctCount - skipped}
+            </p>
+            <p className="text-blue-600 font-semibold">
+              Belgilanmadi: <b>{skipped}</b>
+            </p>
+          </div>
 
-        <div style={styles.percent}>
-          {Math.round((correctCount / tests.length) * 100)}%
+          <div className="mt-8 text-5xl font-extrabold text-blue-600">
+            {Math.round((correctCount / test.length) * 100)}%
+          </div>
+
+          {isPending && (
+            <p className="mt-4 text-sm text-slate-400">
+              Natija serverga yuborilmoqda...
+            </p>
+          )}
+
+          <button
+            onClick={() => navigate("/")}
+            className="mt-8 flex items-center gap-2 px-4 py-2 rounded-xl
+              bg-linear-to-r from-blue-500 to-blue-600
+              text-white font-semibold
+              shadow-lg shadow-blue-500/30
+              hover:from-blue-600 hover:to-blue-700
+              active:scale-95 transition-all"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Ortga
+          </button>
         </div>
       </div>
     );
   }
 
-  /* =====================
-     TEST SAHIFASI
-  ====================== */
+  /* ================= TEST ================= */
   return (
-    <div style={styles.wrapper}>
-      <div style={styles.topBar}>
-        <span>
-          Test {current + 1} / {tests.length}
-        </span>
-        <span style={styles.timer}>
-          ⏱ {timeLeft}s
-        </span>
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="w-full max-w-lg bg-black text-white rounded-2xl p-6 shadow-2xl">
+        <div className="flex justify-between text-sm text-slate-400 mb-4">
+          <span>
+            Test {current + 1} / {test.length}
+          </span>
+          <span className="text-yellow-400 font-semibold">⏱ {timeLeft}s</span>
+        </div>
+
+        <h3 className="text-xl font-semibold mb-6">
+          {test[current].question}
+        </h3>
+
+        <div className="space-y-4">
+          {test[current].options.map((opt, i) => (
+            <button
+              key={i}
+              onClick={() => selectAnswer(i)}
+              className="w-full text-left px-4 py-3 rounded-xl
+                bg-gray-900 text-white
+                hover:bg-slate-800
+                active:scale-95
+                transition-all"
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
       </div>
-
-      <h3 style={styles.question}>
-        {tests[current].question}
-      </h3>
-
-      {tests[current].options.map((opt, i) => (
-        <button
-          key={i}
-          onClick={() => selectAnswer(i)}
-          style={styles.option}
-        >
-          {opt}
-        </button>
-      ))}
     </div>
   );
 };
 
 export default Tests;
-
-/* =====================
-   STYLES
-====================== */
-const styles = {
-  wrapper: {
-    maxWidth: 480,
-    margin: "40px auto",
-    padding: 24,
-    background: "#000000",
-    color: "#ffffff",
-    borderRadius: 16,
-    boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
-  },
-  topBar: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: 12,
-    fontSize: 14,
-    color: "#94a3b8",
-  },
-  timer: {
-    color: "#facc15",
-    fontWeight: 600,
-  },
-  question: {
-    fontSize: 20,
-    fontWeight: 600,
-    marginBottom: 20,
-  },
-  option: {
-    width: "100%",
-    padding: "14px 16px",
-    marginBottom: 12,
-    borderRadius: 12,
-    border: "none",
-    background: "#111827",
-    color: "#ffffff",
-    cursor: "pointer",
-    fontSize: 16,
-    textAlign: "left" as const,
-  },
-  resultWrapper: {
-    maxWidth: 420,
-    margin: "60px auto",
-    padding: 32,
-    background: "#ffffff",
-    color: "#000000",
-    borderRadius: 20,
-    textAlign: "center" as const,
-    boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
-  },
-  title: {
-    fontSize: 22,
-    marginBottom: 20,
-  },
-  percent: {
-    marginTop: 20,
-    fontSize: 42,
-    fontWeight: 700,
-    color: "#2563eb",
-  },
-};

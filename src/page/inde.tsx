@@ -1,4 +1,4 @@
-import { BookOpen, User } from "lucide-react";
+import { BookOpen, Star, User } from "lucide-react";
 import { Link } from "react-router";
 
 const First = () => {
@@ -31,6 +31,18 @@ const First = () => {
                      active:scale-95 transition-all duration-200"
         >
           <User className="w-8 h-8"/> User Profile
+        </Link>
+
+        <Link
+          to="/ai-test"
+          className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl
+                     bg-linear-to-r from-emerald-500 to-emerald-600
+                     text-white text-lg font-semibold
+                     shadow-lg shadow-emerald-500/30
+                     hover:scale-[1.03] hover:from-emerald-600 hover:to-emerald-700
+                     active:scale-95 transition-all duration-200"
+        >
+          <Star className="w-8 h-8"/> Ai bilan test ishlash
         </Link>
       </div>
     </nav>
