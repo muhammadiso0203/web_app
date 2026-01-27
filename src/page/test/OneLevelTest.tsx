@@ -6,7 +6,12 @@ import { useSubmitTest } from "../service/checkResult";
 
 const TIME_PER_TEST = 30;
 
-const Tests = () => {
+const shuffleArray = <T,>(array: T[]): T[] => {
+  return [...array].sort(() => Math.random() - 0.5);
+};
+
+const OneLevelTest = () => {
+  const [testList, setTestList] = useState<any[]>([]);
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [finished, setFinished] = useState(false);
@@ -15,11 +20,15 @@ const Tests = () => {
   const navigate = useNavigate();
   const { mutate: submitTest, isPending } = useSubmitTest();
 
-  const test = tests.level1.tests1;
+  /* ================= RANDOM TESTLAR ================= */
+  useEffect(() => {
+    const randomTests = shuffleArray(tests.level1.tests1);
+    setTestList(randomTests);
+  }, []);
 
   /* ================= TIMER ================= */
   useEffect(() => {
-    if (finished) return;
+    if (finished || testList.length === 0) return;
 
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
@@ -32,7 +41,7 @@ const Tests = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [current, finished]);
+  }, [current, finished, testList]);
 
   /* ================= TIME OUT ================= */
   const handleTimeOut = () => {
@@ -40,7 +49,7 @@ const Tests = () => {
     newAnswers[current] = -1;
     setAnswers(newAnswers);
 
-    if (current + 1 < test.length) {
+    if (current + 1 < testList.length) {
       setCurrent(current + 1);
     } else {
       setFinished(true);
@@ -55,7 +64,7 @@ const Tests = () => {
 
     setTimeLeft(TIME_PER_TEST);
 
-    if (current + 1 < test.length) {
+    if (current + 1 < testList.length) {
       setCurrent(current + 1);
     } else {
       setFinished(true);
@@ -64,28 +73,29 @@ const Tests = () => {
 
   /* ================= BACKENDGA YUBORISH ================= */
   useEffect(() => {
-    if (!finished) return;
+    if (!finished || testList.length === 0) return;
 
-    // Telegram WebApp user (agar bo‘lsa)
     const tgUser = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user;
+    const savedName = localStorage.getItem("test_user_name")?.trim();
 
     submitTest({
-      tests: test,
+      tests: testList,
       answers,
       user: {
-        username: tgUser?.username,
-        firstName: tgUser?.first_name,
+        firstName: savedName || tgUser?.first_name || "Nomaʼlum",
+        username: tgUser?.username || null,
       },
     });
-  }, [finished]);
+  }, [finished, submitTest, testList, answers]);
 
   /* ================= RESULT ================= */
   if (finished) {
     const correctCount = answers.filter(
-      (ans, i) => ans === test[i].correct,
+      (ans, i) => ans === testList[i]?.correct,
     ).length;
 
     const skipped = answers.filter((a) => a === -1).length;
+    localStorage.removeItem("test_user_name");
 
     return (
       <div className="min-h-screen flex items-center justify-center bg-black p-6">
@@ -97,13 +107,13 @@ const Tests = () => {
 
           <div className="w-full space-y-2 text-lg">
             <p className="text-white">
-              Jami testlar: <b>{test.length}</b>
+              Jami testlar: <b>{testList.length}</b>
             </p>
             <p className="text-green-600 font-semibold">
               To‘g‘ri: {correctCount}
             </p>
             <p className="text-red-600 font-semibold">
-              Xato: {test.length - correctCount - skipped}
+              Xato: {testList.length - correctCount - skipped}
             </p>
             <p className="text-blue-600 font-semibold">
               Belgilanmadi: <b>{skipped}</b>
@@ -111,7 +121,7 @@ const Tests = () => {
           </div>
 
           <div className="mt-8 text-5xl font-extrabold text-blue-600">
-            {Math.round((correctCount / test.length) * 100)}%
+            {Math.round((correctCount / testList.length) * 100)}%
           </div>
 
           {isPending && (
@@ -126,7 +136,6 @@ const Tests = () => {
               bg-linear-to-r from-blue-500 to-blue-600
               text-white font-semibold
               shadow-lg shadow-blue-500/30
-              hover:from-blue-600 hover:to-blue-700
               active:scale-95 transition-all"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -137,23 +146,32 @@ const Tests = () => {
     );
   }
 
+  /* ================= LOADING ================= */
+  if (testList.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Test yuklanmoqda...
+      </div>
+    );
+  }
+
   /* ================= TEST ================= */
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
       <div className="w-full max-w-lg bg-black text-white rounded-2xl p-6 shadow-2xl">
         <div className="flex justify-between text-sm text-slate-400 mb-4">
           <span>
-            Test {current + 1} / {test.length}
+            Test {current + 1} / {testList.length}
           </span>
           <span className="text-yellow-400 font-semibold">⏱ {timeLeft}s</span>
         </div>
 
         <h3 className="text-xl font-semibold mb-6">
-          {test[current].question}
+          {testList[current].question}
         </h3>
 
         <div className="space-y-4">
-          {test[current].options.map((opt, i) => (
+          {testList[current].options.map((opt: number, i: number) => (
             <button
               key={i}
               onClick={() => selectAnswer(i)}
@@ -172,4 +190,4 @@ const Tests = () => {
   );
 };
 
-export default Tests;
+export default OneLevelTest;
