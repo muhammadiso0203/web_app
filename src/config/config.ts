@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const request = axios.create({
-  baseURL: "https://www.akbarovich.uz/",
+  baseURL: "http://3.109.62.210/",
 });
 
 
