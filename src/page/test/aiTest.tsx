@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, LineChart } from "lucide-react";
+import { ArrowLeft, LineChart, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useTestGenerate } from "../service/testGenerate";
 import { useCheckResult } from "../service/checkResult";
+import { useAiFeedback } from "../service/aiFeedback";
 import Loading from "../../components/loading";
 
 const TIME_PER_TEST = 30;
@@ -28,6 +29,12 @@ const AiTest = () => {
     isPending: isChecking,
     error: checkResultError,
   } = useCheckResult();
+
+  const {
+    mutate: getDetailedFeedback,
+    data: detailedFeedback,
+    isPending: isGettingFeedback,
+  } = useAiFeedback();
 
   /* ======================
      AI TESTNI YUKLASH
@@ -101,6 +108,16 @@ const AiTest = () => {
         {
           onSuccess: (data) => {
             setResult(data);
+
+            // Fetch detailed feedback
+            const tgUser = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user;
+            const telegramId = String(tgUser?.id || "");
+
+            getDetailedFeedback({
+              telegramId,
+              questions: tests,
+              userAnswers: answers,
+            });
           },
         },
       );
@@ -198,6 +215,23 @@ const AiTest = () => {
             {result.feedback}
           </p>
 
+          <div className="mt-6 w-full text-left">
+            <h3 className="text-blue-400 font-bold flex items-center gap-2 mb-2">
+              <Sparkles className="w-4 h-4" />
+              Detailed Analysis
+            </h3>
+            <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl text-slate-300 text-sm leading-relaxed whitespace-pre-line">
+              {isGettingFeedback ? (
+                <div className="flex items-center gap-2 text-slate-500 italic">
+                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  AI tahlil qilmoqda...
+                </div>
+              ) : (
+                detailedFeedback?.feedback || "Feedback yuklanmadi."
+              )}
+            </div>
+          </div>
+
           <button
             onClick={() => navigate("/")}
             className="mt-8 flex items-center gap-2 px-4 py-2 rounded-xl
@@ -230,7 +264,7 @@ const AiTest = () => {
           </span>
         </div>
 
-        
+
 
         <h3 className="text-xl font-semibold mb-6">
           {tests[current]?.question}
