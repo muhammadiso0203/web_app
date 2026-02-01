@@ -23,7 +23,11 @@ const AiTest = () => {
     error: generateTestError,
   } = useTestGenerate();
 
-  const checkResult = useCheckResult();
+  const {
+    mutate: checkResultMutate,
+    isPending: isChecking,
+    error: checkResultError,
+  } = useCheckResult();
 
   /* ======================
      AI TESTNI YUKLASH
@@ -92,7 +96,7 @@ const AiTest = () => {
   ====================== */
   useEffect(() => {
     if (finished && tests.length > 0) {
-      checkResult.mutate(
+      checkResultMutate(
         { tests, answers },
         {
           onSuccess: (data) => {
@@ -104,24 +108,39 @@ const AiTest = () => {
   }, [finished]);
 
   /* ======================
-     ❌ ERROR — HAR DOIM BIRINCHI
+     ❌ ERROR HANDLING
   ====================== */
-  if (generateTestError) {
-    const errorMsg =
-      (generateTestError as any)?.response?.data?.message ||
-      "Testni yuklab bo‘lmadi 😢";
+  const error = generateTestError || checkResultError;
+
+  if (error) {
+    const rawMessage = (error as any)?.response?.data?.message || (error as any)?.message || "";
+    let friendlyMessage = "Kutilmagan xatolik yuz berdi 😢";
+
+    if (rawMessage.includes("Foydalanuvchi topilmadi")) {
+      friendlyMessage = "Foydalanuvchi topilmadi. Iltimos, botni qaytadan ishga tushiring.";
+    } else if (rawMessage.includes("Sizning bepul urinishlaringiz tugadi")) {
+      friendlyMessage = "Sizning bepul urinishlaringiz tugadi. Davom etish uchun PRO obunani sotib oling.";
+    } else if (rawMessage.includes("AI test generation failed")) {
+      friendlyMessage = "AI test tayyorlashda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.";
+    } else if (rawMessage.includes("AI result checking failed")) {
+      friendlyMessage = "Natijani hisoblashda xatolik yuz berdi. Iltimos, birozdan so'ng qaytadan urinib ko'ring.";
+    } else if (rawMessage.toLowerCase().includes("network error")) {
+      friendlyMessage = "Internet bilan bog'liq muammo yuz berdi. Iltimos, aloqani tekshiring.";
+    }
 
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white p-6 text-center">
-        <p className="text-red-500 text-lg font-semibold mb-4">
-          {errorMsg}
-        </p>
-        <button
-          onClick={() => navigate("/")}
-          className="px-6 py-2 bg-blue-600 rounded-xl font-semibold active:scale-95 transition"
-        >
-          Ortga qaytish
-        </button>
+        <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-2xl max-w-sm">
+          <p className="text-red-500 text-lg font-semibold mb-4">
+            {friendlyMessage}
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className="px-6 py-2 bg-blue-600 rounded-xl font-semibold active:scale-95 transition"
+          >
+            Ortga qaytish
+          </button>
+        </div>
       </div>
     );
   }
@@ -140,7 +159,7 @@ const AiTest = () => {
   /* ======================
      ⏳ NATIJA HISOBLANMOQDA
   ====================== */
-  if (finished && !result) {
+  if (finished && (isChecking || !result)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-white">
         <Loading text="Natija hisoblanmoqda..." />
