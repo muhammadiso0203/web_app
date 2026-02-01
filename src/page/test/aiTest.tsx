@@ -230,12 +230,14 @@ const AiTest = () => {
           </span>
         </div>
 
+        
+
         <h3 className="text-xl font-semibold mb-6">
-          {tests[current].question}
+          {tests[current]?.question}
         </h3>
 
         <div className="space-y-4">
-          {tests[current].options.map((opt: string, i: number) => (
+          {tests[current]?.options.map((opt: string, i: number) => (
             <button
               key={i}
               onClick={() => selectAnswer(i)}
