@@ -3,8 +3,8 @@ import { request } from "../../config/config"
 
 export const useTestGenerate = () => {
     return useMutation({
-        mutationFn: () => {
-            return request.post('ai/generate-test').then((res) => res.data)
+        mutationFn: (telegramId: string) => {
+            return request.post('ai/generate-test', { telegramId }).then((res) => res.data)
         }
     })
 }

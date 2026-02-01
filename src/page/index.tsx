@@ -11,7 +11,7 @@ const First = () => {
         </h1>
 
         <button
-          onClick={() => navigate("/start")}
+          onClick={() => navigate("/tests")}
           className="w-full py-4 rounded-xl
                      bg-blue-600 text-white font-semibold
                      active:scale-95 transition"

@@ -17,14 +17,17 @@ const AiTest = () => {
   const [timeLeft, setTimeLeft] = useState(TIME_PER_TEST);
   const [result, setResult] = useState<any>(null);
 
-  const {mutate: generateTest, isPending, error: generateTestError} = useTestGenerate()
+  const { mutate: generateTest, isPending, error: generateTestError } = useTestGenerate()
   const checkResult = useCheckResult();
 
   /* ======================
      AI TESTNI YUKLASH
   ====================== */
   useEffect(() => {
-    generateTest(undefined, {
+    const tgUser = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user;
+    const telegramId = String(tgUser?.id || "");
+
+    generateTest(telegramId, {
       onSuccess: (data) => {
         setTests(data);
       },
@@ -98,24 +101,31 @@ const AiTest = () => {
   if (isPending || tests.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <Loading text="Ai test yuklanmoqda biroz sabr qiling... "/>
+        <Loading text="Ai test yuklanmoqda biroz sabr qiling... " />
       </div>
     );
   }
 
   if (generateTestError) {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-red-500">
-      Testni yuklab bo‘lmadi 😢
-    </div>
-  );
-}
+    const errorMsg = (generateTestError as any)?.response?.data?.message || "Testni yuklab bo‘lmadi 😢";
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white p-6 text-center">
+        <p className="text-red-500 text-lg font-semibold mb-4">{errorMsg}</p>
+        <button
+          onClick={() => navigate("/")}
+          className="px-6 py-2 bg-blue-600 rounded-xl font-semibold active:scale-95 transition"
+        >
+          Ortga qaytish
+        </button>
+      </div>
+    );
+  }
 
 
   if (finished && !result) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <Loading text="Natija hisoblanmoqda biroz sabr qiling..."/>
+        <Loading text="Natija hisoblanmoqda biroz sabr qiling..." />
       </div>
     );
   }
