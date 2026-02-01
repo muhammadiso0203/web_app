@@ -17,7 +17,12 @@ const AiTest = () => {
   const [timeLeft, setTimeLeft] = useState(TIME_PER_TEST);
   const [result, setResult] = useState<any>(null);
 
-  const { mutate: generateTest, isPending, error: generateTestError } = useTestGenerate()
+  const {
+    mutate: generateTest,
+    isPending,
+    error: generateTestError,
+  } = useTestGenerate();
+
   const checkResult = useCheckResult();
 
   /* ======================
@@ -30,6 +35,9 @@ const AiTest = () => {
     generateTest(telegramId, {
       onSuccess: (data) => {
         setTests(data);
+      },
+      onError: () => {
+        setTests([]); // ❗ loading osilib qolmasligi uchun
       },
     });
   }, []);
@@ -80,7 +88,7 @@ const AiTest = () => {
   };
 
   /* ======================
-     TEST TUGADI → AI NATIJA
+     TEST TUGADI → NATIJA
   ====================== */
   useEffect(() => {
     if (finished && tests.length > 0) {
@@ -96,21 +104,18 @@ const AiTest = () => {
   }, [finished]);
 
   /* ======================
-     LOADING STATES
+     ❌ ERROR — HAR DOIM BIRINCHI
   ====================== */
-  if (isPending || tests.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <Loading text="Ai test yuklanmoqda biroz sabr qiling... " />
-      </div>
-    );
-  }
-
   if (generateTestError) {
-    const errorMsg = (generateTestError as any)?.response?.data?.message || "Testni yuklab bo‘lmadi 😢";
+    const errorMsg =
+      (generateTestError as any)?.response?.data?.message ||
+      "Testni yuklab bo‘lmadi 😢";
+
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white p-6 text-center">
-        <p className="text-red-500 text-lg font-semibold mb-4">{errorMsg}</p>
+        <p className="text-red-500 text-lg font-semibold mb-4">
+          {errorMsg}
+        </p>
         <button
           onClick={() => navigate("/")}
           className="px-6 py-2 bg-blue-600 rounded-xl font-semibold active:scale-95 transition"
@@ -121,17 +126,30 @@ const AiTest = () => {
     );
   }
 
-
-  if (finished && !result) {
+  /* ======================
+     ⏳ LOADING
+  ====================== */
+  if (isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <Loading text="Natija hisoblanmoqda biroz sabr qiling..." />
+        <Loading text="AI test yuklanmoqda, biroz sabr qiling..." />
       </div>
     );
   }
 
   /* ======================
-     NATIJA SAHIFASI
+     ⏳ NATIJA HISOBLANMOQDA
+  ====================== */
+  if (finished && !result) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+        <Loading text="Natija hisoblanmoqda..." />
+      </div>
+    );
+  }
+
+  /* ======================
+     📊 NATIJA SAHIFASI
   ====================== */
   if (finished && result) {
     return (
@@ -179,7 +197,7 @@ const AiTest = () => {
   }
 
   /* ======================
-     TEST SAHIFASI
+     📝 TEST SAHIFASI
   ====================== */
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
