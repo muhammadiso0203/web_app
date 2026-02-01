@@ -20,12 +20,21 @@ const First = () => {
         </button>
 
         <button
+          onClick={() => navigate("/translate-word")}
+          className="w-full py-4 rounded-xl
+                     bg-blue-600 text-white font-semibold
+                     active:scale-95 transition"
+        >
+          Translate Words
+        </button>
+
+        <button
           onClick={() => navigate("/ai-test")}
           className="w-full py-4 rounded-xl
                      bg-green-600 text-white font-semibold
                      active:scale-95 transition"
         >
-          ⭐ AI bilan test ishlash
+          ⭐ Test work with AI
         </button>
       </div>
     </div>

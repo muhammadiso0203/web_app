@@ -5,6 +5,7 @@ import OneLevelTest from "./page/test/OneLevelTest";
 import TwoLevelTest from "./page/test/twoLevelTest";
 import AiTest from "./page/test/aiTest";
 import MainLayout from "./layout/mainLayout";
+import TranslateWord from "./page/test/translateWord";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
         <Route path="tests" element={<TestsLevel />} />
         <Route path="/level1" element={<OneLevelTest />} />
         <Route path="/level2" element={<TwoLevelTest />} />
+        <Route path="translate-word" element={<TranslateWord/>}/>
 
         <Route path="ai-test" element={<AiTest />} />
         
