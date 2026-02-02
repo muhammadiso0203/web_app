@@ -177,7 +177,7 @@ const TranslateWord = () => {
   ====================== */
   if (finished && (isChecking || !result)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+      <div className="min-h-screen w-full flex items-center justify-center bg-slate-950">
         <Loading text="Natijangiz tahlil qilinmoqda..." />
       </div>
     );
