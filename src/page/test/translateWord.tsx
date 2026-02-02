@@ -128,16 +128,28 @@ const TranslateWord = () => {
   const error = generateError || checkResultError;
 
   if (error) {
-    const rawMessage = (error as any)?.response?.data?.message || (error as any)?.message || "";
+    const rawMessage =
+      (error as any)?.response?.data?.message ||
+      (error as any)?.message ||
+      "";
+
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950 text-white p-6 text-center">
-        <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-3xl backdrop-blur-xl">
+        <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-3xl backdrop-blur-xl max-w-md w-full">
           <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <p className="text-red-200 text-lg font-medium mb-6">
+
+          <p className="text-red-200 text-lg font-medium mb-3">
             {rawMessage.includes("urinishlaringiz tugadi")
               ? "Sizning bepul urinishlaringiz tugadi. Davom etish uchun PRO obunani sotib oling."
               : "Xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring."}
           </p>
+
+          {rawMessage && !rawMessage.includes("urinishlaringiz tugadi") && (
+            <p className="text-xs text-red-300/80 wrap-break-word mb-4">
+              Server xabari: {Array.isArray(rawMessage) ? rawMessage.join(", ") : rawMessage}
+            </p>
+          )}
+
           <button
             onClick={() => navigate("/")}
             className="w-full py-3 bg-white text-black rounded-2xl font-bold active:scale-95 transition-transform"
@@ -280,7 +292,7 @@ const TranslateWord = () => {
           <span className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-4 block">
             Translate this word
           </span>
-          <h2 className="text-4xl font-black text-white leading-tight mb-2 break-words">
+          <h2 className="text-4xl font-black text-white leading-tight mb-2 wrap-break-word">
             {tests[current]?.question}
           </h2>
         </div>
@@ -299,11 +311,11 @@ const TranslateWord = () => {
                               font-bold text-slate-400 group-hover:bg-blue-500 group-hover:text-white transition-colors">
                   {String.fromCharCode(65 + i)}
                 </div>
-                <span className="text-lg font-bold text-slate-300 group-hover:text-white transition-colors">
+                <span className="text-lg font-bold text-slate-300 group-hover:text-white transition-colors wrap-break-word">
                   {opt}
                 </span>
               </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 to-blue-600/0 group-hover:from-blue-600/5 group-hover:to-transparent transition-all" />
+              <div className="absolute inset-0 bg-linear-to-r from-blue-600/0 to-blue-600/0 group-hover:from-blue-600/5 group-hover:to-transparent transition-all" />
             </button>
           ))}
         </div>
