@@ -94,14 +94,22 @@ const AiTest = () => {
 
   useEffect(() => {
     if (finished && tests.length > 0) {
+      const tgUser = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user;
+      const telegramId = String(tgUser?.id || "");
+
       checkResultMutate(
-        { tests, answers },
+        {
+          tests,
+          answers,
+          user: {
+            telegramId,
+            username: tgUser?.username,
+            firstName: tgUser?.first_name
+          }
+        },
         {
           onSuccess: (data) => {
             setResult(data);
-            const tgUser = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user;
-            const telegramId = String(tgUser?.id || "");
-
             getDetailedFeedback({
               telegramId,
               questions: tests,

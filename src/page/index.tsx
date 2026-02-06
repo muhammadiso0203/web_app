@@ -16,7 +16,7 @@ import { useAuth } from "../hooks/useAuth";
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user: tgUser } = useTelegram();
-  const { isPro, isLoading } = useAuth();
+  const { isPro, isLoading, profile } = useAuth();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -104,7 +104,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <button className="p-2 rounded-xl bg-white/5 border border-white/10">
+        <button onClick={() => navigate("/leaderboard")} className="p-2 rounded-xl bg-white/5 border border-white/10">
           <Trophy className="w-5 h-5 text-yellow-500" />
         </button>
       </motion.div>
@@ -121,14 +121,14 @@ const Dashboard = () => {
             <Flame className="w-4 h-4" />
             <span className="text-xs font-semibold uppercase tracking-wider">Streak</span>
           </div>
-          <div className="text-2xl font-bold">12 Days</div>
+          <div className="text-2xl font-bold">{profile?.streak || 0} Days</div>
         </motion.div>
         <motion.div variants={itemVariants} className="glass-card p-4 flex flex-col gap-1">
           <div className="flex items-center gap-2 text-blue-500">
             <Trophy className="w-4 h-4" />
             <span className="text-xs font-semibold uppercase tracking-wider">Top Score</span>
           </div>
-          <div className="text-2xl font-bold">8.5</div>
+          <div className="text-2xl font-bold">{profile?.bestScore || 0}</div>
         </motion.div>
       </motion.div>
 
@@ -178,18 +178,22 @@ const Dashboard = () => {
         <div className="relative z-10">
           <div className="flex justify-between items-center mb-4">
             <h4 className="font-bold">Daily Goal</h4>
-            <span className="text-xs text-blue-400 font-bold">75%</span>
+            <span className="text-xs text-blue-400 font-bold">
+              {Math.min(100, Math.round(((profile?.dailyTestsCount || 0) / (profile?.dailyGoal || 5)) * 100))}%
+            </span>
           </div>
           <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: "75%" }}
+              animate={{ width: `${Math.min(100, ((profile?.dailyTestsCount || 0) / (profile?.dailyGoal || 5)) * 100)}%` }}
               transition={{ duration: 1, delay: 1 }}
               className="h-full bg-linear-to-r from-blue-500 to-purple-600 rounded-full"
             />
           </div>
           <p className="text-xs text-gray-400 mt-4 leading-relaxed">
-            You're almost there! Complete one more <span className="text-white font-medium">AI Test</span> to reach your daily goal.
+            {profile?.dailyTestsCount >= profile?.dailyGoal
+              ? "Amazing! You've reached your daily goal. Keep it up! 🚀"
+              : `You've completed ${profile?.dailyTestsCount || 0} tests today. ${profile?.dailyGoal - profile?.dailyTestsCount} more to go!`}
           </p>
         </div>
 

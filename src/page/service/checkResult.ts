@@ -2,14 +2,20 @@ import { useMutation } from "@tanstack/react-query";
 import { request } from "../../config/config";
 
 type CheckResultPayload = {
-  tests: number[];
+  tests: any[];
   answers: number[];
+  user?: {
+    telegramId?: string;
+    username?: string;
+    firstName?: string;
+  };
 };
 
 export interface SubmitTestPayload {
   tests: any[];
   answers: number[];
   user?: {
+    telegramId?: string;
     username?: string;
     firstName?: string;
   };

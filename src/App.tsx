@@ -8,6 +8,7 @@ import MainLayout from "./layout/mainLayout";
 import TranslateWord from "./page/test/translateWord";
 import Profile from "./page/profile";
 import Settings from "./page/settings";
+import Leaderboard from "./page/leaderboard";
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="ai-test" element={<AiTest />} />
         <Route path="profile" element={<Profile />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="leaderboard" element={<Leaderboard />} />
       </Route>
     </Routes>
   );
