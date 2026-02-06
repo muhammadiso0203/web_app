@@ -30,7 +30,7 @@ const TestsLevel = () => {
       subtitle: "Intensive Task 1 & 2 preparation",
       path: "/level3",
       color: "from-emerald-500 to-teal-600",
-      locked: true
+      locked: !isPro
     }
   ];
 
