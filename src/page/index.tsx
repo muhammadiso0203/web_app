@@ -88,7 +88,7 @@ const Dashboard = () => {
             {tgUser?.photo_url ? (
               <img src={tgUser.photo_url} alt="Profile" className="w-full h-full rounded-full object-cover" />
             ) : (
-              <User className="w-6 h-6 text-white" />
+              <User className="max-w-6 max-h-6 text-white" />
             )}
           </div>
           <div>
