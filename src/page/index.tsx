@@ -126,9 +126,9 @@ const Dashboard = () => {
         <motion.div variants={itemVariants} className="glass-card p-4 flex flex-col gap-1">
           <div className="flex items-center gap-2 text-blue-500">
             <Trophy className="w-4 h-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Top Score</span>
+            <span className="text-xs font-semibold uppercase tracking-wider">Global Rank</span>
           </div>
-          <div className="text-2xl font-bold">{profile?.bestScore || 0}</div>
+          <div className="text-2xl font-bold">#{profile?.rank || "-"}</div>
         </motion.div>
       </motion.div>
 
