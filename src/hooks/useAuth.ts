@@ -33,7 +33,7 @@ export const useAuth = () => {
         enabled: !!token,
     });
 
-    const { data: profile } = useQuery({
+    const { data: profile, isLoading: isProfileLoading } = useQuery({
         queryKey: ["user-profile", tgUser?.id],
         queryFn: async () => {
             const response = await request.get(`/users/me/${tgUser?.id}`);
@@ -45,8 +45,8 @@ export const useAuth = () => {
     return {
         token,
         isPro: subscription?.isPro || false,
-        user: profile || loginMutation.data?.user,
-        isLoading: loginMutation.isPending,
+        user: profile || loginMutation.data?.user || tgUser,
+        isLoading: loginMutation.isPending || (isProfileLoading && !!token && !!tgUser?.id),
         profile
     };
 };
