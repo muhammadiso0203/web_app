@@ -1,5 +1,5 @@
 import { Outlet, useNavigate, useLocation } from "react-router";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Home, BookOpen, Settings, User } from "lucide-react";
 
 const MainLayout = () => {
@@ -14,7 +14,7 @@ const MainLayout = () => {
   ];
 
   return (
-    <div className="relative min-h-screen bg-[#09090b]">
+    <div className="relative min-h-screen bg-background">
       {/* Dynamic Content */}
       <main className="mx-auto max-w-lg">
         <Outlet />

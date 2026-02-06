@@ -35,7 +35,7 @@ const TestsLevel = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white p-6 pb-32">
+    <div className="min-h-screen bg-background text-white p-6 pb-32">
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -66,7 +66,7 @@ const TestsLevel = () => {
               }`}
           >
             {/* Background Gradient */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${level.color} opacity-10 group-hover:opacity-20 transition-opacity`} />
+            <div className={`absolute inset-0 bg-linear-to-br ${level.color} opacity-10 group-hover:opacity-20 transition-opacity`} />
             <div className={`absolute inset-0 border-2 border-white/5 group-hover:border-white/10 rounded-[32px] transition-colors`} />
 
             <div className="relative z-10 flex items-center justify-between">
@@ -85,7 +85,7 @@ const TestsLevel = () => {
             </div>
 
             {/* Decorative element */}
-            <div className={`absolute -right-4 -bottom-4 w-24 h-24 bg-gradient-to-br ${level.color} blur-3xl opacity-20`} />
+            <div className={`absolute -right-4 -bottom-4 w-24 h-24 bg-linear-to-br ${level.color} blur-3xl opacity-20`} />
           </motion.button>
         ))}
       </div>

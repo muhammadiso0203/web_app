@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, LineChart, Sparkles, Timer, CheckCircle2, AlertCircle } from "lucide-react";
+import { ArrowLeft, Sparkles, Timer, CheckCircle2, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useTestGenerate } from "../service/testGenerate";
 import { useCheckResult } from "../service/checkResult";
@@ -125,7 +125,7 @@ const AiTest = () => {
     }
 
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#09090b] text-white p-6 text-center">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-white p-6 text-center">
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -146,7 +146,7 @@ const AiTest = () => {
 
   if (isPending) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#09090b] text-white">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-white">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
@@ -159,7 +159,7 @@ const AiTest = () => {
 
   if (finished && (isChecking || !result)) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#09090b] text-white p-6">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-white p-6">
         <motion.div
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ repeat: Infinity, duration: 1.5 }}
@@ -174,7 +174,7 @@ const AiTest = () => {
 
   if (finished && result) {
     return (
-      <div className="min-h-screen bg-[#09090b] p-6 pb-24 overflow-y-auto">
+      <div className="min-h-screen bg-background p-6 pb-24 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -236,7 +236,7 @@ const AiTest = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white p-6 pb-32">
+    <div className="min-h-screen bg-background text-white p-6 pb-32">
       {/* Progress Header */}
       <div className="max-w-lg mx-auto mb-10">
         <div className="flex items-center justify-between mb-4">

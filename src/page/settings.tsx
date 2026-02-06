@@ -10,7 +10,7 @@ const Settings = () => {
     ];
 
     return (
-        <div className="p-6 pt-10 min-h-screen bg-[#09090b]">
+        <div className="p-6 pt-10 min-h-screen bg-background">
             <div className="mb-8">
                 <h2 className="text-3xl font-bold mb-2">Settings</h2>
                 <p className="text-gray-400">Manage your learning preferences</p>

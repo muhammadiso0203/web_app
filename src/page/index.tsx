@@ -65,7 +65,7 @@ const Dashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#09090b]">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
@@ -76,7 +76,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white p-6 pb-24 font-['Inter']">
+    <div className="min-h-screen bg-background text-white p-6 pb-24 font-['Inter']">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -84,7 +84,7 @@ const Dashboard = () => {
         className="flex items-center justify-between mb-8"
       >
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-2 border-white/10 shadow-lg">
+          <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center border-2 border-white/10 shadow-lg">
             {tgUser?.photo_url ? (
               <img src={tgUser.photo_url} alt="Profile" className="w-full h-full rounded-full object-cover" />
             ) : (
@@ -162,7 +162,7 @@ const Dashboard = () => {
               <ChevronRight className="w-5 h-5 text-gray-500 group-hover:text-white group-hover:translate-x-1 transition-all" />
 
               {/* Subtle hover background effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-all duration-1000" />
+              <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-all duration-1000" />
             </motion.button>
           ))}
         </motion.div>
@@ -185,7 +185,7 @@ const Dashboard = () => {
               initial={{ width: 0 }}
               animate={{ width: "75%" }}
               transition={{ duration: 1, delay: 1 }}
-              className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"
+              className="h-full bg-linear-to-r from-blue-500 to-purple-600 rounded-full"
             />
           </div>
           <p className="text-xs text-gray-400 mt-4 leading-relaxed">

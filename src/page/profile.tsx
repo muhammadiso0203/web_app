@@ -1,19 +1,19 @@
 import { motion } from "framer-motion";
-import { User, Mail, Phone, Calendar, LogOut } from "lucide-react";
+import { User, Mail, LogOut } from "lucide-react";
 import { useTelegram } from "../hooks/useTelegram";
 
 const Profile = () => {
     const { user } = useTelegram();
 
     return (
-        <div className="p-6 pt-10 min-h-screen bg-[#09090b]">
+        <div className="p-6 pt-10 min-h-screen bg-background">
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="flex flex-col items-center mb-10"
             >
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 p-1 mb-4">
-                    <div className="w-full h-full rounded-full bg-[#09090b] flex items-center justify-center overflow-hidden border-2 border-white/5">
+                <div className="w-24 h-24 rounded-full bg-linear-to-br from-blue-500 to-purple-600 p-1 mb-4">
+                    <div className="w-full h-full rounded-full bg-background flex items-center justify-center overflow-hidden border-2 border-white/5">
                         {user?.photo_url ? (
                             <img src={user.photo_url} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
