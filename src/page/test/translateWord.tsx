@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, Sparkles, Languages, CheckCircle2, XCircle, Timer } from "lucide-react";
+import { ArrowLeft, Sparkles, Languages, CheckCircle2, XCircle, Timer, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useTranslateGenerate } from "../service/translateGenerate";
 import { useCheckResult } from "../service/checkResult";
 import { useAiFeedback } from "../service/aiFeedback";
-import Loading from "../../components/loading";
+import { motion, AnimatePresence } from "framer-motion";
 
-const TIME_PER_TEST = 20; // Translation tests are usually shorter
+const TIME_PER_TEST = 20;
 
 const TranslateWord = () => {
   const navigate = useNavigate();
@@ -36,9 +36,6 @@ const TranslateWord = () => {
     isPending: isGettingFeedback,
   } = useAiFeedback();
 
-  /* ======================
-     AI TESTNI YUKLASH
-  ====================== */
   useEffect(() => {
     const tgUser = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user;
     const telegramId = String(tgUser?.id || "");
@@ -53,9 +50,6 @@ const TranslateWord = () => {
     });
   }, []);
 
-  /* ======================
-     TIMER
-  ====================== */
   useEffect(() => {
     if (finished || tests.length === 0) return;
 
@@ -98,9 +92,6 @@ const TranslateWord = () => {
     }
   };
 
-  /* ======================
-     TEST TUGADI → NATIJA
-  ====================== */
   useEffect(() => {
     if (finished && tests.length > 0) {
       checkResultMutate(
@@ -122,204 +113,182 @@ const TranslateWord = () => {
     }
   }, [finished]);
 
-  /* ======================
-     ❌ ERROR HANDLING
-  ====================== */
-  const error = generateError || checkResultError;
+  if (generateError || checkResultError) {
+    const error = (generateError || checkResultError) as any;
+    const rawMessage = error?.response?.data?.message || error?.message || "";
+    let friendlyMessage = "Something went wrong 😢";
 
-  if (error) {
-    const rawMessage =
-      (error as any)?.response?.data?.message ||
-      (error as any)?.message ||
-      "";
+    if (rawMessage.includes("urinishlaringiz tugadi")) {
+      friendlyMessage = "Free daily limits reached. Upgrade to PRO to continue!";
+    }
 
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950 text-white p-6 text-center">
-        <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-3xl backdrop-blur-xl max-w-md w-full">
-          <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-
-          <p className="text-red-200 text-lg font-medium mb-3">
-            {rawMessage.includes("urinishlaringiz tugadi")
-              ? "Sizning bepul urinishlaringiz tugadi. Davom etish uchun PRO obunani sotib oling."
-              : "Xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring."}
-          </p>
-
-          {rawMessage && !rawMessage.includes("urinishlaringiz tugadi") && (
-            <p className="text-xs text-red-300/80 wrap-break-word mb-4">
-              Server xabari: {Array.isArray(rawMessage) ? rawMessage.join(", ") : rawMessage}
-            </p>
-          )}
-
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#09090b] text-white p-6 text-center">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="glass-card p-8 max-w-sm flex flex-col items-center"
+        >
+          <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
+          <p className="text-xl font-bold mb-6">{friendlyMessage}</p>
           <button
             onClick={() => navigate("/")}
-            className="w-full py-3 bg-white text-black rounded-2xl font-bold active:scale-95 transition-transform"
+            className="w-full py-4 bg-blue-600 rounded-2xl font-bold active:scale-95 transition"
           >
-            Bosh sahifaga
+            Bosh sahifa
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
-  /* ======================
-     ⏳ LOADING
-  ====================== */
   if (isPending) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
-        <Loading text="AI so'zlarni tayyorlamoqda..." />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#09090b] text-white">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+          className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full mb-6"
+        />
+        <p className="text-gray-400 font-medium animate-pulse">Vocabulary booster is loading...</p>
       </div>
     );
   }
 
-  /* ======================
-     ⏳ NATIJA HISOBLANMOQDA
-  ====================== */
   if (finished && (isChecking || !result)) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-slate-950">
-        <Loading text="Natijangiz tahlil qilinmoqda..." />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#09090b] text-white p-6">
+        <motion.div
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          className="w-20 h-20 bg-purple-500/10 rounded-full flex items-center justify-center mb-6"
+        >
+          <Languages className="w-10 h-10 text-purple-500" />
+        </motion.div>
+        <p className="text-gray-400 font-medium">Evaluating your vocabulary...</p>
       </div>
     );
   }
 
-  /* ======================
-     📊 NATIJA SAHIFASI
-  ====================== */
   if (finished && result) {
     return (
-      <div className="min-h-screen w-full bg-slate-950 p-6 flex items-center justify-center font-sans">
-        <div className="w-full  animate-in fade-in zoom-in duration-500">
-          {/* Header Card */}
-          <div className="bg-slate-900/50 border border-white/5 rounded-3xl p-8 backdrop-blur-2xl text-center relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500" />
+      <div className="min-h-screen bg-[#09090b] p-6 pb-24 overflow-y-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md mx-auto"
+        >
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+            </div>
+            <h2 className="text-3xl font-bold">Great Job!</h2>
+            <p className="text-gray-400 mt-2">Vocabulary Test Completed</p>
+          </div>
 
-            <Languages className="w-12 h-12 text-blue-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-white mb-2">Tarjima Natijasi</h2>
-            <div className="flex items-center justify-center gap-2 mb-8">
-              <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold uppercase tracking-wider">
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="glass-card p-5 text-center">
+              <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Correct</p>
+              <p className="text-3xl font-bold text-emerald-400">{result.correct}</p>
+            </div>
+            <div className="glass-card p-5 text-center">
+              <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Wrong</p>
+              <p className="text-3xl font-bold text-rose-400">{result.wrong}</p>
+            </div>
+          </div>
+
+          <div className="glass-card p-6 mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-widest border border-blue-500/20">
                 {result.level} LEVEL
               </span>
             </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 mb-2 mx-auto" />
-                <span className="block text-2xl font-bold text-white">{result.correct}</span>
-                <span className="text-xs text-slate-500 uppercase font-bold tracking-tight">To'g'ri</span>
-              </div>
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                <XCircle className="w-5 h-5 text-rose-400 mb-2 mx-auto" />
-                <span className="block text-2xl font-bold text-white">{result.wrong}</span>
-                <span className="text-xs text-slate-500 uppercase font-bold tracking-tight">Xato</span>
-              </div>
-            </div>
-
-            <p className="text-slate-400 text-sm leading-relaxed mb-8 italic">
+            <p className="text-sm text-gray-400 leading-relaxed mb-6 italic">
               "{result.feedback}"
             </p>
 
-            {/* AI Feedback Section */}
-            <div className="text-left mb-8">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-4 h-4 text-amber-400" />
-                <span className="text-sm font-bold text-slate-300">AI Detailed Analysis</span>
-              </div>
-              <div className="bg-black/40 rounded-2xl p-4 border border-white/5 min-h-[100px] flex items-center">
-                {isGettingFeedback ? (
-                  <div className="flex items-center gap-3 text-slate-500 text-sm">
-                    <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                    AI tahlil qilmoqda...
-                  </div>
-                ) : (
-                  <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-line">
-                    {detailedFeedback?.feedback || "Feedback yuklanmadi."}
-                  </p>
-                )}
-              </div>
+            <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
+              <h4 className="text-xs font-bold text-purple-400 uppercase tracking-widest mb-2 flex items-center gap-1">
+                <Sparkles className="w-3 h-3" /> AI Analysis
+              </h4>
+              {isGettingFeedback ? (
+                <div className="flex items-center gap-2 py-4">
+                  <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-sm text-gray-500">Processing...</span>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                  {detailedFeedback?.feedback || "Feedback loading failed."}
+                </p>
+              )}
             </div>
-
-            <button
-              onClick={() => navigate("/")}
-              className="w-full py-4 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold
-                         shadow-lg shadow-blue-500/25 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Bosh menyuga qaytish
-            </button>
           </div>
-        </div>
+
+          <button
+            onClick={() => navigate("/")}
+            className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl font-bold transition-all hover:bg-white/10"
+          >
+            Return to Dashboard
+          </button>
+        </motion.div>
       </div>
     );
   }
 
-  /* ======================
-     📝 TEST SAHIFASI
-  ====================== */
   return (
-    <div className="min-h-screen w-full bg-slate-950 flex flex-col items-center p-6 font-sans">
-      <div className="w-full mt-8">
-
-        {/* Progress Display */}
-        <div className="flex justify-between items-end mb-6">
-          <div>
-            <span className="text-blue-500 font-black text-4xl leading-none">
-              {String(current + 1).padStart(2, '0')}
-            </span>
-            <span className="text-slate-700 font-bold text-xl ml-1">
-              / {String(tests.length).padStart(2, '0')}
-            </span>
+    <div className="min-h-screen bg-[#09090b] text-white p-6 pb-32">
+      <div className="max-w-lg mx-auto mb-10">
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-500"><ArrowLeft /></button>
+          <div className="flex items-center gap-2 bg-white/5 px-4 py-1.5 rounded-full border border-white/10">
+            <Timer className={`w-4 h-4 ${timeLeft < 5 ? "text-red-500 animate-pulse" : "text-purple-400"}`} />
+            <span className={`text-sm font-bold font-mono ${timeLeft < 5 ? "text-red-500" : "text-white"}`}>{timeLeft}s</span>
           </div>
-          <div className="flex flex-col items-end">
-            <div className={`flex items-center gap-2 font-mono font-bold text-xl ${timeLeft < 5 ? 'text-rose-500 animate-pulse' : 'text-slate-300'}`}>
-              <Timer className="w-5 h-5" />
-              00:{String(timeLeft).padStart(2, '0')}
-            </div>
-            <div className="w-32 h-1 bg-slate-900 rounded-full mt-2 overflow-hidden">
-              <div
-                className="h-full bg-blue-500 transition-all duration-1000 ease-linear"
-                style={{ width: `${(timeLeft / TIME_PER_TEST) * 100}%` }}
-              />
-            </div>
+          <div className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+            {current + 1} / {tests.length}
           </div>
         </div>
-
-        {/* Question Card */}
-        <div className="bg-slate-900/40 border border-white/5 rounded-[40px] p-10 backdrop-blur-xl mb-8 relative overflow-hidden group">
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-colors" />
-
-          <span className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-4 block">
-            Translate this word
-          </span>
-          <h2 className="text-4xl font-black text-white leading-tight mb-2 wrap-break-word">
-            {tests[current]?.question}
-          </h2>
-        </div>
-
-        {/* Options */}
-        <div className="grid grid-cols-1 gap-4">
-          {tests[current]?.options.map((opt: string, i: number) => (
-            <button
-              key={i}
-              onClick={() => selectAnswer(i)}
-              className="group relative w-full text-left p-6 rounded-3xl bg-slate-900/60 border border-white/5 
-                         hover:bg-slate-800 transition-all active:scale-[0.98] overflow-hidden"
-            >
-              <div className="flex items-center gap-4 relative z-10">
-                <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center 
-                              font-bold text-slate-400 group-hover:bg-blue-500 group-hover:text-white transition-colors">
-                  {String.fromCharCode(65 + i)}
-                </div>
-                <span className="text-lg font-bold text-slate-300 group-hover:text-white transition-colors wrap-break-word">
-                  {opt}
-                </span>
-              </div>
-              <div className="absolute inset-0 bg-linear-to-r from-blue-600/0 to-blue-600/0 group-hover:from-blue-600/5 group-hover:to-transparent transition-all" />
-            </button>
-          ))}
+        <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${((current + 1) / tests.length) * 100}%` }}
+            className="h-full bg-purple-500"
+          />
         </div>
       </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 1.05 }}
+          className="max-w-lg mx-auto"
+        >
+          <div className="text-center mb-10">
+            <span className="text-[10px] font-bold text-purple-400 uppercase tracking-[0.3em] mb-4 block">Translate this word</span>
+            <h2 className="text-5xl font-black tracking-tight bg-gradient-to-b from-white to-gray-500 bg-clip-text text-transparent">
+              {tests[current]?.question}
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            {tests[current]?.options.map((opt: string, i: number) => (
+              <motion.button
+                key={i}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => selectAnswer(i)}
+                className="w-full text-left p-6 rounded-[28px] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-500/30 transition-all group flex items-center gap-4"
+              >
+                <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center font-bold text-gray-500 group-hover:bg-purple-500 group-hover:text-white transition-all">
+                  {String.fromCharCode(65 + i)}
+                </div>
+                <span className="text-lg font-bold text-gray-300 group-hover:text-white">{opt}</span>
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };

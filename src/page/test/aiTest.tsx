@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, LineChart, Sparkles } from "lucide-react";
+import { ArrowLeft, LineChart, Sparkles, Timer, CheckCircle2, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useTestGenerate } from "../service/testGenerate";
 import { useCheckResult } from "../service/checkResult";
 import { useAiFeedback } from "../service/aiFeedback";
-import Loading from "../../components/loading";
+import { motion, AnimatePresence } from "framer-motion";
 
 const TIME_PER_TEST = 30;
 
@@ -36,9 +36,6 @@ const AiTest = () => {
     isPending: isGettingFeedback,
   } = useAiFeedback();
 
-  /* ======================
-     AI TESTNI YUKLASH
-  ====================== */
   useEffect(() => {
     const tgUser = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user;
     const telegramId = String(tgUser?.id || "");
@@ -48,14 +45,11 @@ const AiTest = () => {
         setTests(data);
       },
       onError: () => {
-        setTests([]); // ❗ loading osilib qolmasligi uchun
+        setTests([]);
       },
     });
   }, []);
 
-  /* ======================
-     TIMER
-  ====================== */
   useEffect(() => {
     if (finished || tests.length === 0) return;
 
@@ -98,9 +92,6 @@ const AiTest = () => {
     }
   };
 
-  /* ======================
-     TEST TUGADI → NATIJA
-  ====================== */
   useEffect(() => {
     if (finished && tests.length > 0) {
       checkResultMutate(
@@ -108,8 +99,6 @@ const AiTest = () => {
         {
           onSuccess: (data) => {
             setResult(data);
-
-            // Fetch detailed feedback
             const tgUser = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user;
             const telegramId = String(tgUser?.id || "");
 
@@ -124,168 +113,180 @@ const AiTest = () => {
     }
   }, [finished]);
 
-  /* ======================
-     ❌ ERROR HANDLING
-  ====================== */
-  const error = generateTestError || checkResultError;
-
-  if (error) {
-    const rawMessage = (error as any)?.response?.data?.message || (error as any)?.message || "";
-    let friendlyMessage = "Kutilmagan xatolik yuz berdi 😢";
+  if (generateTestError || checkResultError) {
+    const error = (generateTestError || checkResultError) as any;
+    const rawMessage = error?.response?.data?.message || error?.message || "";
+    let friendlyMessage = "Unexpected error occurred 😢";
 
     if (rawMessage.includes("Foydalanuvchi topilmadi")) {
-      friendlyMessage = "Foydalanuvchi topilmadi. Iltimos, botni qaytadan ishga tushiring.";
+      friendlyMessage = "User not found. Please restart the bot.";
     } else if (rawMessage.includes("Sizning bepul urinishlaringiz tugadi")) {
-      friendlyMessage = "Sizning bepul urinishlaringiz tugadi. Davom etish uchun PRO obunani sotib oling.";
-    } else if (rawMessage.includes("AI test generation failed")) {
-      friendlyMessage = "AI test tayyorlashda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.";
-    } else if (rawMessage.includes("AI result checking failed")) {
-      friendlyMessage = "Natijani hisoblashda xatolik yuz berdi. Iltimos, birozdan so'ng qaytadan urinib ko'ring.";
-    } else if (rawMessage.toLowerCase().includes("network error")) {
-      friendlyMessage = "Internet bilan bog'liq muammo yuz berdi. Iltimos, aloqani tekshiring.";
+      friendlyMessage = "Free attempts reached. Upgrade to PRO to continue.";
     }
 
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white p-6 text-center">
-        <div className="bg-red-500/10 border border-red-500/20 p-6 rounded-2xl max-w-sm">
-          <p className="text-red-500 text-lg font-semibold mb-4">
-            {friendlyMessage}
-          </p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#09090b] text-white p-6 text-center">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="glass-card p-8 max-w-sm flex flex-col items-center"
+        >
+          <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
+          <p className="text-xl font-bold mb-6">{friendlyMessage}</p>
           <button
             onClick={() => navigate("/")}
-            className="px-6 py-2 bg-blue-600 rounded-xl font-semibold active:scale-95 transition"
+            className="w-full py-4 bg-blue-600 rounded-2xl font-bold active:scale-95 transition shadow-lg shadow-blue-600/20"
           >
-            Ortga qaytish
+            Go Back
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
-  /* ======================
-     ⏳ LOADING
-  ====================== */
   if (isPending) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <Loading text="AI test yuklanmoqda, biroz sabr qiling..." />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#09090b] text-white">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+          className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mb-6"
+        />
+        <p className="text-gray-400 font-medium animate-pulse">AI is crafting your test...</p>
       </div>
     );
   }
 
-  /* ======================
-     ⏳ NATIJA HISOBLANMOQDA
-  ====================== */
   if (finished && (isChecking || !result)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <Loading text="Natija hisoblanmoqda..." />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#09090b] text-white p-6">
+        <motion.div
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+          className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mb-6"
+        >
+          <Sparkles className="w-10 h-10 text-blue-500" />
+        </motion.div>
+        <p className="text-gray-400 font-medium">Analyzing your performance...</p>
       </div>
     );
   }
 
-  /* ======================
-     📊 NATIJA SAHIFASI
-  ====================== */
   if (finished && result) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black p-6">
-        <div className="w-full max-w-md p-8 text-center flex flex-col items-center bg-black">
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-white">
-            <LineChart className="w-7 h-7 text-blue-600" />
-            AI Test Natijasi
-          </h2>
-
-          <div className="w-full space-y-2 text-lg">
-            <p className="text-white">
-              Jami testlar: <b>{result.total}</b>
-            </p>
-            <p className="text-green-600 font-semibold">
-              To‘g‘ri: {result.correct}
-            </p>
-            <p className="text-red-600 font-semibold">
-              Xato: {result.wrong}
-            </p>
-            <p className="text-blue-500 font-semibold">
-              Daraja: <b>{result.level}</b>
-            </p>
+      <div className="min-h-screen bg-[#09090b] p-6 pb-24 overflow-y-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md mx-auto"
+        >
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 className="w-10 h-10 text-blue-500" />
+            </div>
+            <h2 className="text-3xl font-bold">Results Ready!</h2>
+            <p className="text-gray-400 mt-2">Here's how you performed</p>
           </div>
 
-          <p className="mt-4 text-slate-300 text-sm">
-            {result.feedback}
-          </p>
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="glass-card p-5 text-center">
+              <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Score</p>
+              <p className="text-3xl font-bold text-blue-400">{result.correct}/{result.total}</p>
+            </div>
+            <div className="glass-card p-5 text-center">
+              <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Band</p>
+              <p className="text-3xl font-bold text-purple-400">{result.level}</p>
+            </div>
+          </div>
 
-          <div className="mt-6 w-full text-left">
-            <h3 className="text-blue-400 font-bold flex items-center gap-2 mb-2">
-              <Sparkles className="w-4 h-4" />
-              Detailed Analysis
+          <div className="glass-card p-6 mb-6">
+            <h3 className="font-bold mb-3 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-yellow-500" />
+              AI Feedback
             </h3>
-            <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl text-slate-300 text-sm leading-relaxed whitespace-pre-line">
+            <p className="text-sm text-gray-400 leading-relaxed mb-6">
+              {result.feedback}
+            </p>
+
+            <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
+              <h4 className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2">Deep Analysis</h4>
               {isGettingFeedback ? (
-                <div className="flex items-center gap-2 text-slate-500 italic">
-                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                  AI tahlil qilmoqda...
+                <div className="flex items-center gap-2 py-4">
+                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-sm text-gray-500">Generating detailed breakdown...</span>
                 </div>
               ) : (
-                detailedFeedback?.feedback || "Feedback yuklanmadi."
+                <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                  {detailedFeedback?.feedback || "Detailed analysis not available."}
+                </p>
               )}
             </div>
           </div>
 
           <button
             onClick={() => navigate("/")}
-            className="mt-8 flex items-center gap-2 px-4 py-2 rounded-xl
-                       bg-linear-to-r from-blue-500 to-blue-600
-                       text-white font-semibold
-                       shadow-lg shadow-blue-500/30
-                       hover:from-blue-600 hover:to-blue-700
-                       active:scale-95 transition-all"
+            className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl font-bold flex items-center justify-center gap-2 transition-colors hover:bg-white/10"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Ortga
+            <ArrowLeft className="w-5 h-5" />
+            Back to Home
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
-  /* ======================
-     📝 TEST SAHIFASI
-  ====================== */
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="w-full max-w-lg bg-black text-white rounded-2xl p-6 shadow-2xl">
-        <div className="flex justify-between text-sm text-slate-400 mb-4">
-          <span>
-            Test {current + 1} / {tests.length}
-          </span>
-          <span className="text-yellow-400 font-semibold">
-            ⏱ {timeLeft}s
-          </span>
+    <div className="min-h-screen bg-[#09090b] text-white p-6 pb-32">
+      {/* Progress Header */}
+      <div className="max-w-lg mx-auto mb-10">
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-500"><ArrowLeft /></button>
+          <div className="flex items-center gap-2 bg-white/5 px-4 py-1.5 rounded-full border border-white/10">
+            <Timer className={`w-4 h-4 ${timeLeft < 10 ? "text-red-500 animate-pulse" : "text-blue-400"}`} />
+            <span className={`text-sm font-bold font-mono ${timeLeft < 10 ? "text-red-500" : "text-white"}`}>{timeLeft}s</span>
+          </div>
+          <div className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+            {current + 1} / {tests.length}
+          </div>
         </div>
-
-
-
-        <h3 className="text-xl font-semibold mb-6">
-          {tests[current]?.question}
-        </h3>
-
-        <div className="space-y-4">
-          {tests[current]?.options.map((opt: string, i: number) => (
-            <button
-              key={i}
-              onClick={() => selectAnswer(i)}
-              className="w-full text-left px-4 py-3 rounded-xl
-                         bg-gray-900 text-white
-                         hover:bg-slate-800
-                         active:scale-95
-                         transition-all"
-            >
-              {opt}
-            </button>
-          ))}
+        <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${((current + 1) / tests.length) * 100}%` }}
+            className="h-full bg-blue-500"
+          />
         </div>
       </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          className="max-w-lg mx-auto"
+        >
+          <div className="glass-card p-8 mb-8">
+            <h3 className="text-2xl font-bold leading-tight">
+              {tests[current]?.question}
+            </h3>
+          </div>
+
+          <div className="space-y-4">
+            {tests[current]?.options.map((opt: string, i: number) => (
+              <motion.button
+                key={i}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => selectAnswer(i)}
+                className="w-full text-left p-5 rounded-[24px] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all font-medium text-lg flex items-center justify-between group"
+              >
+                <span>{opt}</span>
+                <div className="w-6 h-6 rounded-full border-2 border-white/10 group-hover:border-blue-500 transition-colors" />
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 };
