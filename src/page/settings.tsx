@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Bell, Shield, Moon, Globe, HelpCircle, ChevronRight, Check } from "lucide-react";
+import { Bell, Shield, Moon, Globe, HelpCircle, ChevronRight } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { request } from "../config/config";
