@@ -20,7 +20,7 @@
   --card-foreground: #0f172a;     /* card ichidagi text */
 
   --text: #0f172a;                /* asosiy text */
-  --muted: #f1f5f9;               /* secondary bg */
+  --muted: #000;               /* secondary bg */
   --muted-foreground: #64748b;    /* muted text */
 
   --glass-bg: rgba(255, 255, 255, 0.6);
