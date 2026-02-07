@@ -15,23 +15,22 @@
 :root {
   color-scheme: light;
 
-  --background: #f8fafc;          /* umumiy fon */
-  --card: #ffffff;                /* card */
-  --card-foreground: #0f172a;     /* card ichidagi text */
+  --background: #f8fafc; /* umumiy fon */
+  --card: #ffffff; /* card */
+  --card-foreground: #0f172a; /* card ichidagi text */
 
-  --text: #0f172a;                /* asosiy text */
-  --muted: #000;               /* secondary bg */
-  --muted-foreground: #64748b;    /* muted text */
+  --text: #0f172a; /* asosiy text (slate-900) */
+  --muted: #f1f5f9; /* secondary bg (slate-100) */
+  --muted-foreground: #475569; /* muted text (slate-600) */
 
   --glass-bg: rgba(255, 255, 255, 0.6);
   --glass-border: rgba(15, 23, 42, 0.08);
   --glass-card-bg: linear-gradient(
     135deg,
-    #000,
-    #000 100%
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.4) 100%
   );
 }
-
 
 .dark {
   color-scheme: dark;

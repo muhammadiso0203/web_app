@@ -65,14 +65,14 @@ const Settings = () => {
     ];
 
     return (
-        <div className="p-6 pt-10 min-h-screen bg-background pb-32 font-['Inter']">
+        <div className="p-6 pt-10 min-h-screen bg-background text-foreground pb-32 font-['Inter']">
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-8"
             >
                 <h2 className="text-3xl font-black mb-2 tracking-tight">Settings</h2>
-                <p className="text-gray-400 text-sm">Personalize your learning experience</p>
+                <p className="text-muted-foreground text-sm">Personalize your learning experience</p>
             </motion.div>
 
             <div className="space-y-6">
@@ -93,7 +93,7 @@ const Settings = () => {
                                     </div>
                                     <div className="text-left">
                                         <p className="text-sm font-bold">{item.label}</p>
-                                        <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">{item.value}</p>
+                                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{item.value}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -102,7 +102,7 @@ const Settings = () => {
                                             <div className={`w-3 h-3 bg-white rounded-full transition-transform ${profile?.notificationsEnabled ? "translate-x-5" : "translate-x-0"}`} />
                                         </div>
                                     )}
-                                    {item.onClick && <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-white transition-colors" />}
+                                    {item.onClick && <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />}
                                 </div>
                             </motion.button>
                         ))}
@@ -111,22 +111,22 @@ const Settings = () => {
 
                 <div className="glass-card p-5 group flex items-center justify-between hover:bg-white/5 transition-colors">
                     <div className="flex items-center gap-4">
-                        <div className="p-2.5 rounded-xl bg-white/5 text-gray-400 group-hover:scale-110 transition-transform">
+                        <div className="p-2.5 rounded-xl bg-white/5 text-muted-foreground group-hover:scale-110 transition-transform">
                             <HelpCircle className="w-5 h-5" />
                         </div>
                         <div>
                             <p className="text-sm font-bold">Help Center</p>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Support & FAQ</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Support & FAQ</p>
                         </div>
                     </div>
-                    <button onClick={()=> window.open('https://t.me/sergelidanman', '_blank')} className="text-blue-400 text-xs font-black uppercase tracking-widest cursor-pointer">Support</button>
+                    <button onClick={() => window.open('https://t.me/sergelidanman', '_blank')} className="text-blue-400 text-xs font-black uppercase tracking-widest cursor-pointer">Support</button>
                 </div>
 
                 <div className="flex flex-col items-center gap-2 py-10">
-                    <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                    <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
                         Version 1.2.0
                     </div>
-                    <p className="text-[10px] text-gray-600 font-medium">© 2026 IELTS Master AI. All rights reserved.</p>
+                    <p className="text-[10px] text-muted-foreground font-medium">© 2026 IELTS Master AI. All rights reserved.</p>
                 </div>
             </div>
         </div>

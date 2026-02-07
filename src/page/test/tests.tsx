@@ -46,7 +46,7 @@ const TestsLevel = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-white p-6 pb-32 relative">
+    <div className="min-h-screen bg-background text-foreground p-6 pb-32 relative">
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -54,13 +54,13 @@ const TestsLevel = () => {
       >
         <button
           onClick={() => navigate(-1)}
-          className="p-3 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-colors"
+          className="p-3 rounded-2xl bg-white/5 border border-white/10 text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
           <h2 className="text-2xl font-bold">Select Level</h2>
-          <p className="text-sm text-gray-500">Choose your current IELTS level</p>
+          <p className="text-sm text-muted-foreground">Choose your current IELTS level</p>
         </div>
       </motion.div>
 

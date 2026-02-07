@@ -76,7 +76,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background text-white p-6 pb-24 font-['Inter']">
+    <div className="min-h-screen bg-background text-foreground p-6 pb-24 font-['Inter']">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -92,7 +92,7 @@ const Dashboard = () => {
             )}
           </div>
           <div>
-            <h2 className="text-sm text-gray-400">Welcome back,</h2>
+            <h2 className="text-sm text-muted-foreground">Welcome back,</h2>
             <div className="flex items-center gap-2">
               <span className="font-bold text-lg">{tgUser?.first_name || "Scholar"}</span>
               {isPro && (
@@ -134,7 +134,7 @@ const Dashboard = () => {
 
       {/* Main Actions */}
       <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-widest ml-1">Learning Path</h3>
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-widest ml-1">Learning Path</h3>
         <motion.div
           variants={containerVariants}
           initial="hidden"
