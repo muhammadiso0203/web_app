@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 @theme {
   --color-primary: #3b82f6;
   --color-secondary: #8b5cf6;
@@ -16,12 +14,12 @@
 
 :root {
   color-scheme: light;
-  --background: #ffffff;
-  --card: #f4f4f5;
-  --card-foreground: #09090b;
-  --text: #09090b;
-  --muted: #e4e4e7;
-  --muted-foreground: #71717a;
+  --background: #000;
+  --card: #000;
+  --card-foreground: #000;
+  --text: #000;
+  --muted: #000;
+  --muted-foreground: #000;
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(0, 0, 0, 0.1);
   --glass-card-bg: linear-gradient(
@@ -31,7 +29,7 @@
   );
 }
 
-:root[class~="dark"] {
+.dark {
   color-scheme: dark;
   --background: #09090b;
   --card: #18181b;
