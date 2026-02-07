@@ -29,6 +29,11 @@ const Settings = () => {
         updateSettingsMutation.mutate({ language: nextLang });
     };
 
+    const toggleTheme = () => {
+        const nextTheme = profile?.theme === "light" ? "dark" : "light";
+        updateSettingsMutation.mutate({ theme: nextTheme });
+    };
+
     const settingsItems = [
         {
             icon: <Bell className="w-5 h-5" />,
@@ -46,8 +51,9 @@ const Settings = () => {
         {
             icon: <Moon className="w-5 h-5" />,
             label: "Theme",
-            value: "Dark Mode",
-            color: "text-orange-400"
+            value: profile?.theme === "light" ? "Light Mode" : "Dark Mode",
+            color: "text-orange-400",
+            onClick: toggleTheme
         },
         {
             icon: <Globe className="w-5 h-5" />,
@@ -103,7 +109,7 @@ const Settings = () => {
                     </div>
                 </div>
 
-                <div className="glass-card p-5 group flex items-center justify-between cursor-pointer hover:bg-white/5 transition-colors">
+                <div className="glass-card p-5 group flex items-center justify-between hover:bg-white/5 transition-colors">
                     <div className="flex items-center gap-4">
                         <div className="p-2.5 rounded-xl bg-white/5 text-gray-400 group-hover:scale-110 transition-transform">
                             <HelpCircle className="w-5 h-5" />
@@ -113,7 +119,7 @@ const Settings = () => {
                             <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Support & FAQ</p>
                         </div>
                     </div>
-                    <button className="text-blue-400 text-xs font-black uppercase tracking-widest hover:text-blue-300 transition-colors">Support</button>
+                    <button onClick={()=> window.open('https://t.me/sergelidanman', '_blank')} className="text-blue-400 text-xs font-black uppercase tracking-widest cursor-pointer">Support</button>
                 </div>
 
                 <div className="flex flex-col items-center gap-2 py-10">

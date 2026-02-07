@@ -5,6 +5,7 @@ import { useTranslateGenerate } from "../service/translateGenerate";
 import { useCheckResult } from "../service/checkResult";
 import { useAiFeedback } from "../service/aiFeedback";
 import { motion, AnimatePresence } from "framer-motion";
+import { getTelegramUser } from "../../utils/telegram";
 
 const TIME_PER_TEST = 20;
 
@@ -37,8 +38,8 @@ const TranslateWord = () => {
   } = useAiFeedback();
 
   useEffect(() => {
-    const tgUser = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user;
-    const telegramId = String(tgUser?.id || "");
+    const user = getTelegramUser();
+    const telegramId = user?.telegramId || "";
 
     generateTranslate(telegramId, {
       onSuccess: (data) => {
@@ -94,8 +95,8 @@ const TranslateWord = () => {
 
   useEffect(() => {
     if (finished && tests.length > 0) {
-      const tgUser = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user;
-      const telegramId = String(tgUser?.id || "");
+      const user = getTelegramUser();
+      const telegramId = user?.telegramId || "";
 
       checkResultMutate(
         {
@@ -103,8 +104,8 @@ const TranslateWord = () => {
           answers,
           user: {
             telegramId,
-            username: tgUser?.username,
-            firstName: tgUser?.first_name
+            username: user?.username,
+            firstName: user?.firstName
           }
         },
         {

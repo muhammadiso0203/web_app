@@ -1,10 +1,21 @@
 import { Outlet, useNavigate, useLocation } from "react-router";
 import { motion } from "framer-motion";
 import { Home, BookOpen, Settings, User, Trophy } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { useEffect } from "react";
 
 const MainLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { profile } = useAuth();
+
+  useEffect(() => {
+    if (profile?.theme === "light") {
+      document.documentElement.classList.remove("dark");
+    } else {
+      document.documentElement.classList.add("dark");
+    }
+  }, [profile?.theme]);
 
   const navItems = [
     { icon: <Home className="w-6 h-6" />, label: "Home", path: "/" },
@@ -15,7 +26,7 @@ const MainLayout = () => {
   ];
 
   return (
-    <div className="relative min-h-screen bg-background text-white">
+    <div className="relative min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Dynamic Content */}
       <main className="mx-auto max-w-lg">
         <Outlet />

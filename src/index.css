@@ -1,23 +1,59 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary: #3b82f6;
   --color-secondary: #8b5cf6;
   --color-accent: #10b981;
-  --color-background: #09090b;
-  --color-card: #18181b;
-  --color-card-foreground: #ffffff;
-  --color-muted: #27272a;
-  --color-muted-foreground: #a1a1aa;
+  --color-background: var(--background);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
 }
 
 :root {
+  color-scheme: light;
+  --background: #ffffff;
+  --card: #f4f4f5;
+  --card-foreground: #09090b;
+  --text: #09090b;
+  --muted: #e4e4e7;
+  --muted-foreground: #71717a;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-card-bg: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.01) 100%
+  );
+}
+
+:root[class~="dark"] {
   color-scheme: dark;
+  --background: #09090b;
+  --card: #18181b;
+  --card-foreground: #ffffff;
+  --text: #ffffff;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --glass-bg: rgba(24, 24, 27, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-card-bg: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.01) 100%
+  );
 }
 
 body {
-  background-color: var(--color-background);
-  color: white;
+  background-color: var(--background);
+  color: var(--text);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
   font-family:
     "Inter",
     -apple-system,
@@ -37,21 +73,17 @@ body {
 
 /* Glassmorphism Classes */
 .glass {
-  background: rgba(24, 24, 27, 0.7);
+  background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
 }
 
 .glass-card {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0.01) 100%
-  );
+  background: var(--glass-card-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
   border-radius: 20px;
 }
 

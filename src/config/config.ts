@@ -1,7 +1,10 @@
 import axios from "axios";
 
+const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const baseURL = isLocal ? "http://localhost:3001" : "https://back.akbarovich.uz";
+
 const request = axios.create({
-  baseURL: "https://back.akbarovich.uz",
+  baseURL,
 });
 
 request.interceptors.request.use((config) => {
