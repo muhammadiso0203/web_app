@@ -27,8 +27,8 @@
   --glass-border: rgba(15, 23, 42, 0.08);
   --glass-card-bg: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.8) 0%,
-    rgba(255, 255, 255, 0.4) 100%
+    #000,
+    #000 100%
   );
 }
 
