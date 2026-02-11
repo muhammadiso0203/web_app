@@ -25,14 +25,6 @@ const TestsLevel = () => {
       path: "/level2",
       color: "from-purple-500 to-pink-600",
       locked: !isPro
-    },
-    {
-      id: "level3",
-      title: "Academic Writing",
-      subtitle: "Intensive preparation",
-      path: "/level3",
-      color: "from-emerald-500 to-teal-600",
-      locked: !isPro
     }
   ];
 
