@@ -129,8 +129,8 @@ const AiTest = () => {
 
     if (rawMessage.includes("Foydalanuvchi topilmadi")) {
       friendlyMessage = "User not found. Please restart the bot.";
-    } else if (rawMessage.includes("Sizning bepul urinishlaringiz tugadi")) {
-      friendlyMessage = "Free attempts reached. Upgrade to PRO to continue.";
+    } else if (rawMessage.includes("urinishlaringiz tugadi")) {
+      friendlyMessage = "Bugungi bepul urinishlaringiz tugadi. PRO obunani sotib oling yoki ertagacha kuting.";
     }
 
     return (

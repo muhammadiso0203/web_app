@@ -128,7 +128,7 @@ const TranslateWord = () => {
     let friendlyMessage = "Something went wrong 😢";
 
     if (rawMessage.includes("urinishlaringiz tugadi")) {
-      friendlyMessage = "Free daily limits reached. Upgrade to PRO to continue!";
+      friendlyMessage = "Bugungi bepul urinishlaringiz tugadi. PRO obunani sotib oling yoki ertagacha kuting.";
     }
 
     return (
